@@ -5,7 +5,7 @@ namespace WhatsAppApiServer.Data
 {
     public class UsersContext : DbContext
     {
-        private const string connectionString = "server=localhost;port=3306;database=WhatsAppApiDB;user=root;password=123";
+        private const string connectionString = "server=localhost;port=3306;database=WhatsAppApiDB;user=root;password=Osh841998";
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -14,9 +14,8 @@ namespace WhatsAppApiServer.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configuring the Name property as the primary
-            // key of the Items table
-            modelBuilder.Entity<User>().HasKey(e => e.Id);
+            modelBuilder.Entity<User>().HasKey(u => u.Id);
+            modelBuilder.Entity<User>().HasMany(u => u.Conversations).WithOne(cv => cv.User);
         }
 
         public DbSet<User> Users { get; set; }

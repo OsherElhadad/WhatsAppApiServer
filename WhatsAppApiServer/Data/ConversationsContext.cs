@@ -3,7 +3,7 @@ using WhatsAppApiServer.Models;
 
 namespace WhatsAppApiServer.Data
 {
-    public class MessagesContext : DbContext
+    public class ConversationsContext : DbContext
     {
         private const string connectionString = "server=localhost;port=3306;database=WhatsAppApiDB;user=root;password=Osh841998";
 
@@ -14,11 +14,13 @@ namespace WhatsAppApiServer.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Message>().HasKey(m => m.Id);
-            modelBuilder.Entity<Message>().HasOne(m => m.Conversation).WithMany(cv => cv.Messages);
+            modelBuilder.Entity<Conversation>().HasKey(cv => cv.Id);
+            modelBuilder.Entity<Conversation>().HasMany(cv => cv.Messages).WithOne(m => m.Conversation);
+            modelBuilder.Entity<Conversation>().HasOne(cv => cv.User).WithMany(u => u.Conversations);
+            modelBuilder.Entity<Conversation>().HasOne(cv => cv.User).WithMany(u => u.Conversations);
         }
 
-        public DbSet<Message> Messages { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
 
     }
 }

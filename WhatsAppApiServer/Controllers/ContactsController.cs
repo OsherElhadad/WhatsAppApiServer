@@ -21,7 +21,7 @@ namespace WhatsAppApiServer.Controllers
         }
 
         // GET: Contacts
-        [HttpGet(Name = "GetContacts")]
+        /*[HttpGet(Name = "GetContacts")]
         public async Task<IActionResult> GetContacts()
         {
             User current = getCurrentLogedUser();
@@ -34,7 +34,7 @@ namespace WhatsAppApiServer.Controllers
             }
 
             return Ok(contacts);
-        }
+        }*/
 
         // GET: Contacts/5
         [HttpGet("{id}")]
@@ -56,7 +56,7 @@ namespace WhatsAppApiServer.Controllers
         }
 
         // POST: Contacts
-        [HttpPost]
+        /*[HttpPost]
         public async Task<IActionResult> PostContacts([Bind("Id,Name,Server")] Contact contact)
         { 
             User current = getCurrentLogedUser();
@@ -77,7 +77,7 @@ namespace WhatsAppApiServer.Controllers
                 return CreatedAtAction(nameof(GetContacts), new { id = contact.Id }, contact);
             }
             return BadRequest();
-        }
+        }*/
 
         private User getCurrentLogedUser() {
             var userId = User.FindFirst("Id")?.Value;

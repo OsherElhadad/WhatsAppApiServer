@@ -24,7 +24,7 @@ namespace WhatsAppApiServer.Controllers
     }
 
         // GET: Users
-        [HttpGet(Name = "GetUsers")]
+        /*[HttpGet(Name = "GetUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _context.Users.Include(x=>x.Contacts).ToListAsync();
@@ -35,7 +35,7 @@ namespace WhatsAppApiServer.Controllers
             }
 
             return Ok(await _context.Users.ToListAsync());
-        }
+        }*/
 
         // GET: Users/5
         [HttpGet("{id}")]
@@ -83,7 +83,6 @@ namespace WhatsAppApiServer.Controllers
                     expires: DateTime.UtcNow.AddMinutes(10),
                     signingCredentials: signIn);
 
-                user.Contacts = new List<Contact>();
                 _context.Add(user);
                 await _context.SaveChangesAsync();
 

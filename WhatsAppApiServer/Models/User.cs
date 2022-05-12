@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace WhatsAppApiServer.Models
 {
@@ -14,7 +15,8 @@ namespace WhatsAppApiServer.Models
         [RegularExpression(@"^[a-zA-Z0-9]{2}[a-zA-Z0-9]+$")]
         public string Password { get; set; }
 
-        public List<Contact>? Contacts { get; set; }
+        [JsonIgnore]
+        public List<Conversation>? Conversations { get; set; }
 
     }
 }

@@ -22,14 +22,8 @@ namespace WhatsAppApiServer.Migrations.Contacts
             modelBuilder.Entity("WhatsAppApiServer.Models.Contact", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("Last")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("Lastdate")
-                        .HasColumnType("datetime(6)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -40,18 +34,12 @@ namespace WhatsAppApiServer.Migrations.Contacts
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Contacts");
+                    b.ToTable("Contact");
                 });
 
-            modelBuilder.Entity("WhatsAppApiServer.Models.Message", b =>
+            modelBuilder.Entity("WhatsAppApiServer.Models.Conversation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,20 +47,16 @@ namespace WhatsAppApiServer.Migrations.Contacts
 
                     b.Property<string>("ContactId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(100)");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("varchar(2000)");
+                    b.Property<string>("Last")
+                        .HasColumnType("longtext");
 
-                    b.Property<DateTime>("Created")
+                    b.Property<DateTime?>("Lastdate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("Sent")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
@@ -80,6 +64,34 @@ namespace WhatsAppApiServer.Migrations.Contacts
                     b.HasIndex("ContactId");
 
                     b.HasIndex("UserId");
+
+                    b.ToTable("Conversation");
+                });
+
+            modelBuilder.Entity("WhatsAppApiServer.Models.Message", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Created")
+                        .IsRequired()
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("Sent")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
 
                     b.ToTable("Message");
                 });
@@ -99,42 +111,49 @@ namespace WhatsAppApiServer.Migrations.Contacts
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("WhatsAppApiServer.Models.Contact", b =>
-                {
-                    b.HasOne("WhatsAppApiServer.Models.User", "User")
-                        .WithMany("Contacts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WhatsAppApiServer.Models.Message", b =>
+            modelBuilder.Entity("WhatsAppApiServer.Models.Conversation", b =>
                 {
                     b.HasOne("WhatsAppApiServer.Models.Contact", "Contact")
-                        .WithMany("Message")
+                        .WithMany("Conversations")
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("WhatsAppApiServer.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .WithMany("Conversations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Contact");
 
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WhatsAppApiServer.Models.Message", b =>
+                {
+                    b.HasOne("WhatsAppApiServer.Models.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
             modelBuilder.Entity("WhatsAppApiServer.Models.Contact", b =>
                 {
-                    b.Navigation("Message");
+                    b.Navigation("Conversations");
+                });
+
+            modelBuilder.Entity("WhatsAppApiServer.Models.Conversation", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("WhatsAppApiServer.Models.User", b =>
                 {
-                    b.Navigation("Contacts");
+                    b.Navigation("Conversations");
                 });
 #pragma warning restore 612, 618
         }
