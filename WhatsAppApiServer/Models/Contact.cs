@@ -10,9 +10,8 @@ namespace WhatsAppApiServer.Models
         public string? Id { get; set; }
 
         [Key, Column(Order = 1)]
-        [Required]
         [JsonIgnore]
-        public User User { get; set; }
+        public User? User { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -29,6 +28,5 @@ namespace WhatsAppApiServer.Models
 
         [JsonIgnore]
         public List<Message>? Messages { get; set; }
-
     }
 }

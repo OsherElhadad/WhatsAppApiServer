@@ -5,7 +5,7 @@ namespace WhatsAppApiServer.Data
 {
     public class MessagesContext : DbContext
     {
-        private const string connectionString = "server=localhost;port=3306;database=WhatsAppApiDB;user=root;password=Osh841998";
+        private const string connectionString = "server=localhost;port=3306;database=WhatsAppApiDB;user=root;password=123";
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

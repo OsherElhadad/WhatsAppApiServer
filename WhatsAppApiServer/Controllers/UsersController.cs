@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using WhatsAppApiServer.Data;
 using WhatsAppApiServer.Models;
 
@@ -10,17 +14,20 @@ namespace WhatsAppApiServer.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UsersContext _context;
-
-        public UsersController(UsersContext context)
+        private readonly ContactsContext _contactsContext;
+        public IConfiguration _configuration;
+        public UsersController(UsersContext context, ContactsContext contactsContext , IConfiguration configuration)
         {
             _context = context;
-        }
+            _contactsContext = contactsContext;
+            _configuration = configuration;
+    }
 
         // GET: Users
         [HttpGet(Name = "GetUsers")]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.Users.Include(x=>x.Contacts).ToListAsync();
 
             if (users == null || users.Count == 0)
             {
@@ -32,7 +39,7 @@ namespace WhatsAppApiServer.Controllers
 
         // GET: Users/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUsers(string? id)
+        public async Task<IActionResult> GetUser(string? id)
         {
             if (id == null || !UserExists(id))
             {
@@ -59,10 +66,28 @@ namespace WhatsAppApiServer.Controllers
             }
             if (ModelState.IsValid)
             {
+
+                var claims = new[] {
+                        new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                        new Claim("Id", user.Id),
+                    };
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var token = new JwtSecurityToken(
+                    _configuration["Jwt:Issuer"],
+                    _configuration["Jwt:Audience"],
+                    claims,
+                    expires: DateTime.UtcNow.AddMinutes(10),
+                    signingCredentials: signIn);
+
                 user.Contacts = new List<Contact>();
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, user);
+
+                return Ok(new JwtSecurityTokenHandler().WriteToken(token));
             }
             return BadRequest();
         }
@@ -136,5 +161,6 @@ namespace WhatsAppApiServer.Controllers
         {
             return _context.Users.Any(u => u.Id == id);
         }
+
     }
 }

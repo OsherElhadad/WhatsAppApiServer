@@ -1,33 +1,39 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WhatsAppApiServer.Data;
 using WhatsAppApiServer.Models;
 
 namespace WhatsAppApiServer.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ContactsController : ControllerBase
     {
         private readonly ContactsContext _context;
+        private readonly UsersContext _usersContext;
 
-        public ContactsController(ContactsContext context)
+        public ContactsController(ContactsContext context, IConfiguration configuration, UsersContext usersContext)
         {
             _context = context;
+            _usersContext = usersContext;
         }
 
         // GET: Contacts
         [HttpGet(Name = "GetContacts")]
         public async Task<IActionResult> GetContacts()
         {
-            var contact = await _context.Contacts.ToListAsync();
+            User current = getCurrentLogedUser();
 
-            if (contact == null || contact.Count == 0)
+            var contacts = current.Contacts;
+
+            if (contacts == null || contacts.Count == 0)
             {
                 return NotFound();
             }
 
-            return Ok(await _context.Contacts.ToListAsync());
+            return Ok(contacts);
         }
 
         // GET: Contacts/5
@@ -52,7 +58,10 @@ namespace WhatsAppApiServer.Controllers
         // POST: Contacts
         [HttpPost]
         public async Task<IActionResult> PostContacts([Bind("Id,Name,Server")] Contact contact)
-        {
+        { 
+            User current = getCurrentLogedUser();
+            contact.User = current;
+
             if (contact == null || contact.Id == null || ContactExists(contact.Id))
             {
                 return BadRequest();
@@ -62,12 +71,26 @@ namespace WhatsAppApiServer.Controllers
                 contact.Messages = new List<Message>();
                 contact.Last = null;
                 contact.Lastdate = null;
-                // contact.User = ??
+                
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetContacts), new { id = contact.Id }, contact);
             }
             return BadRequest();
+        }
+
+        private User getCurrentLogedUser() {
+            var userId = User.FindFirst("Id")?.Value;
+            return getUserById(userId);
+        }
+
+        private User getUserById(string? userId)
+        {
+            var q = from user in _usersContext.Users
+                    where user.Id == userId
+                    select user;
+
+            return q.FirstOrDefault();
         }
 
         // PUT: Contacts/5
