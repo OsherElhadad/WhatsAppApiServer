@@ -6,10 +6,17 @@ namespace WhatsAppApiServer.Models
 {
     public class Contact
     {
-        [Key]
+        [Key, Column(Order = 0)]
         [StringLength(100)]
         [RegularExpression(@"^[a-zA-Z0-9]{2}[a-zA-Z0-9]+$")]
         public string? Id { get; set; }
+
+        [Key, Column(Order = 1)]
+        [JsonIgnore]
+        public string UserId { get; set; }
+
+        [JsonIgnore]
+        public User User { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -21,6 +28,12 @@ namespace WhatsAppApiServer.Models
         public string Server { get; set; }
 
         [JsonIgnore]
-        public List<Conversation>? Conversations { get; set; }
+        public List<Message>? Messages { get; set; }
+
+        [JsonIgnore]
+        public string? Last { get; set; }
+
+        [JsonIgnore]
+        public DateTime? LastDate { get; set; }
     }
 }

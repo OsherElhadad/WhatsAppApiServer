@@ -9,9 +9,9 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/Contacts/{id}[controller]")]
     public class MessagesController : ControllerBase
     {
-        private readonly ContactsContext _context;
+        private readonly WhatsAppApiContext _context;
 
-        public MessagesController(ContactsContext context)
+        public MessagesController(WhatsAppApiContext context)
         {
             _context = context;
         }

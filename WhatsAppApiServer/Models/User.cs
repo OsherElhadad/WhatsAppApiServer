@@ -8,7 +8,7 @@ namespace WhatsAppApiServer.Models
         [Key]
         [StringLength(100)]
         [RegularExpression(@"^[a-zA-Z0-9]{2}[a-zA-Z0-9]+$")]
-        public string? Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -16,7 +16,7 @@ namespace WhatsAppApiServer.Models
         public string Password { get; set; }
 
         [JsonIgnore]
-        public List<Conversation>? Conversations { get; set; }
+        public List<Contact>? Contacts { get; set; }
 
     }
 }

@@ -8,11 +8,11 @@ using WhatsAppApiServer.Data;
 
 #nullable disable
 
-namespace WhatsAppApiServer.Migrations.Messages
+namespace WhatsAppApiServer.Migrations
 {
-    [DbContext(typeof(MessagesContext))]
-    [Migration("20220512233459_Messages")]
-    partial class Messages
+    [DbContext(typeof(WhatsAppApiContext))]
+    [Migration("20220513150040_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,7 +25,18 @@ namespace WhatsAppApiServer.Migrations.Messages
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("varchar(100)")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(100)")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("Last")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("LastDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -36,38 +47,11 @@ namespace WhatsAppApiServer.Migrations.Messages
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Contact");
-                });
-
-            modelBuilder.Entity("WhatsAppApiServer.Models.Conversation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("ContactId")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("Last")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("Lastdate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContactId");
+                    b.HasKey("Id", "UserId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Conversation");
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("WhatsAppApiServer.Models.Message", b =>
@@ -76,13 +60,18 @@ namespace WhatsAppApiServer.Migrations.Messages
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("ContactId")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ContactUserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("varchar(2000)");
-
-                    b.Property<int>("ConversationId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("Created")
                         .IsRequired()
@@ -93,7 +82,7 @@ namespace WhatsAppApiServer.Migrations.Messages
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConversationId");
+                    b.HasIndex("ContactId", "ContactUserId");
 
                     b.ToTable("Messages");
                 });
@@ -110,52 +99,39 @@ namespace WhatsAppApiServer.Migrations.Messages
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WhatsAppApiServer.Models.Conversation", b =>
+            modelBuilder.Entity("WhatsAppApiServer.Models.Contact", b =>
                 {
-                    b.HasOne("WhatsAppApiServer.Models.Contact", "Contact")
-                        .WithMany("Conversations")
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WhatsAppApiServer.Models.User", "User")
-                        .WithMany("Conversations")
+                        .WithMany("Contacts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Contact");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("WhatsAppApiServer.Models.Message", b =>
                 {
-                    b.HasOne("WhatsAppApiServer.Models.Conversation", "Conversation")
+                    b.HasOne("WhatsAppApiServer.Models.Contact", "Contact")
                         .WithMany("Messages")
-                        .HasForeignKey("ConversationId")
+                        .HasForeignKey("ContactId", "ContactUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Conversation");
+                    b.Navigation("Contact");
                 });
 
             modelBuilder.Entity("WhatsAppApiServer.Models.Contact", b =>
-                {
-                    b.Navigation("Conversations");
-                });
-
-            modelBuilder.Entity("WhatsAppApiServer.Models.Conversation", b =>
                 {
                     b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("WhatsAppApiServer.Models.User", b =>
                 {
-                    b.Navigation("Conversations");
+                    b.Navigation("Contacts");
                 });
 #pragma warning restore 612, 618
         }

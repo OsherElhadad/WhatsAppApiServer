@@ -13,29 +13,25 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly UsersContext _context;
-        private readonly ContactsContext _contactsContext;
+        private readonly WhatsAppApiContext _context;
         public IConfiguration _configuration;
-        public UsersController(UsersContext context, ContactsContext contactsContext , IConfiguration configuration)
+        public UsersController(WhatsAppApiContext usersContext, IConfiguration configuration)
         {
-            _context = context;
-            _contactsContext = contactsContext;
+            _context = usersContext;
             _configuration = configuration;
     }
 
         // GET: Users
-        /*[HttpGet(Name = "GetUsers")]
+        [HttpGet(Name = "GetUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _context.Users.Include(x=>x.Contacts).ToListAsync();
-
-            if (users == null || users.Count == 0)
+            var users = await _context.Users.ToListAsync();
+            if (users == null)
             {
                 return NotFound();
             }
-
-            return Ok(await _context.Users.ToListAsync());
-        }*/
+            return Ok(users);
+        }
 
         // GET: Users/5
         [HttpGet("{id}")]
@@ -48,10 +44,6 @@ namespace WhatsAppApiServer.Controllers
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
 
             return Ok(user);
         }
@@ -60,7 +52,7 @@ namespace WhatsAppApiServer.Controllers
         [HttpPost]
         public async Task<IActionResult> PostUsers([Bind("Id,Password")] User user)
         {
-            if (UserExists(user.Id))
+            if (user.Id == null || UserExists(user.Id))
             {
                 return BadRequest();
             }
@@ -83,6 +75,7 @@ namespace WhatsAppApiServer.Controllers
                     expires: DateTime.UtcNow.AddMinutes(10),
                     signingCredentials: signIn);
 
+                user.Contacts = new List<Contact>();
                 _context.Add(user);
                 await _context.SaveChangesAsync();
 
@@ -93,14 +86,14 @@ namespace WhatsAppApiServer.Controllers
 
         // PUT: Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsers(string? id, [Bind("Password")] User user)
+        public async Task<IActionResult> PutUsers(string? id, string? password)
         {
             if (id == null || !UserExists(id))
             {
                 return NotFound();
             }
 
-            if (user == null || user.Password == null)
+            if (password == null)
             {
                 return BadRequest();
             }
@@ -115,7 +108,7 @@ namespace WhatsAppApiServer.Controllers
                     {
                         return NotFound();
                     }
-                    oldUser.Password = user.Password;
+                    oldUser.Password = password;
                     _context.Update(oldUser);
                     await _context.SaveChangesAsync();
                 }
@@ -139,14 +132,14 @@ namespace WhatsAppApiServer.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsers(string? id)
         {
-            if (id == null)
+            if (id == null || !UserExists(id))
             {
                 return NotFound();
             }
 
             var user = await _context.Users.FindAsync(id);
 
-            if (user == null || !UserExists(id))
+            if (user == null)
             {
                 return NotFound();
             }

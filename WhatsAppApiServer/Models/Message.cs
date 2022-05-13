@@ -21,6 +21,6 @@ namespace WhatsAppApiServer.Models
         public bool Sent { get; set; }
 
         [JsonIgnore]
-        public Conversation Conversation { get; set; }
+        public virtual Contact Contact { get; set; }
     }
 }
