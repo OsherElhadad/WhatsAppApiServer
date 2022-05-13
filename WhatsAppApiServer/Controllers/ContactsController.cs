@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WhatsAppApiServer.Data;
 using WhatsAppApiServer.Models;
+using WhatsAppApiServer.Services;
 
 namespace WhatsAppApiServer.Controllers
 {
@@ -11,11 +12,11 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/[controller]")]
     public class ContactsController : ControllerBase
     {
-        private readonly WhatsAppApiContext _context;
+        private readonly ContactsService _service;
 
-        public ContactsController(WhatsAppApiContext context)
+        public ContactsController(ContactsService contactsService)
         {
-            _context = context;
+            _service = contactsService;
         }
 
         // GET: Contacts
@@ -23,32 +24,40 @@ namespace WhatsAppApiServer.Controllers
         public async Task<IActionResult> GetContacts()
         {
             string? current = getCurrentLogedUser();
-            var contacts = await _context.Contacts.ToListAsync();
 
-            if (contacts == null || current == null)
+            if (current == null)
+            {
+                return Unauthorized();
+            }
+
+            var userContacts = await _service.GetContacts(current);
+            
+            if (userContacts == null)
             {
                 return NotFound();
             }
-
-            var userContacts = from contact in contacts where contact.UserId == current select contact;
 
             return Ok(userContacts);
         }
 
         // GET: Contacts/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetContacts(string? id)
+        public async Task<IActionResult> GetContacts(string id)
         {
             string? current = getCurrentLogedUser();
-            var contacts = await _context.Contacts.ToListAsync();
-            if (contacts == null || current == null || id == null || !ContactExists(id, current))
+
+            if (current == null)
+            {
+                return Unauthorized();
+            }
+            var userContact = await _service.GetContact(current, id);
+
+            if (userContact == null)
             {
                 return NotFound();
             }
 
-            var userContact = from contact in contacts where contact.UserId == current && contact.Id == id select contact;
-
-            return Ok(userContact.FirstOrDefault());
+            return Ok(userContact);
         }
 
         // POST: Contacts
@@ -56,33 +65,16 @@ namespace WhatsAppApiServer.Controllers
         public async Task<IActionResult> PostContacts([Bind("Id,Name,Server")] Contact contact)
         {
             string? current = getCurrentLogedUser();
-            if (contact == null || current == null || contact.Id == null || contact.Name == null || contact.Server == null)
+            if (current == null)
             {
-                return BadRequest();
-            }
-            if (ContactExists(contact.Id, current))
-            {
-                return BadRequest();
+                return Unauthorized();
             }
             if (ModelState.IsValid)
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == current);
-                if (user == null)
+                if (!await _service.AddContact(current, contact))
                 {
                     return BadRequest();
                 }
-                contact.UserId = current;
-                contact.User = user;
-                contact.Messages = new List<Message>();
-                contact.Last = null;
-                contact.LastDate = null;
-                if (user.Contacts == null)
-                {
-                    user.Contacts = new List<Contact>();
-                }
-                user.Contacts.Add(contact);
-                _context.Contacts.Add(contact);
-                await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(PostContacts), null, contact);
             }
             return BadRequest();
@@ -90,68 +82,33 @@ namespace WhatsAppApiServer.Controllers
 
         // PUT: Contacts/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutContacts(string? id, [Bind("Name,Server")] Contact contact)
+        public async Task<IActionResult> PutContacts(string id, string name, string server)
         {
             string? current = getCurrentLogedUser();
-            if (contact == null || current == null || id == null || contact.Name == null || contact.Server == null)
+            if (current == null)
             {
-                return BadRequest();
+                return Unauthorized();
             }
-            if (!ContactExists(id, current))
+            if (!await _service.UpdateContact(current, id, name, server))
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var oldContact = await _context.Contacts
-                        .FirstOrDefaultAsync(c => c.Id == id && c.UserId == current);
-                    if (oldContact == null)
-                    {
-                        return NotFound();
-                    }
-                    oldContact.Name = contact.Name;
-                    oldContact.Server = contact.Server;
-                    _context.Update(oldContact);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ContactExists(id, current))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return NoContent();
-            }
-            return BadRequest();
+            return NoContent();
         }
 
         // DELETE: Contacts/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteContacts(string? id)
+        public async Task<IActionResult> DeleteContacts(string id)
         {
             string? current = getCurrentLogedUser();
-            var contacts = await _context.Contacts.ToListAsync();
-            if (contacts == null || current == null || id == null || !ContactExists(id, current))
+            if (current == null)
+            {
+                return Unauthorized();
+            }
+            if (!await _service.DeleteContact(current, id))
             {
                 return NotFound();
             }
-
-            var userContact = (from contact in contacts where contact.UserId == current && contact.Id == id select contact).FirstOrDefault();
-            if (userContact == null)
-            {
-                return NotFound();
-            }
-
-            _context.Contacts.Remove(userContact);
-            await _context.SaveChangesAsync();
             return NoContent();
         }
 
@@ -159,11 +116,6 @@ namespace WhatsAppApiServer.Controllers
         {
             var userId = User.FindFirst("Id")?.Value;
             return userId;
-        }
-
-        private bool ContactExists(string id, string userId)
-        {
-            return _context.Contacts.Any(c => c.Id == id && c.UserId == userId);
         }
     }
 }

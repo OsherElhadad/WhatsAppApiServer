@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace WhatsAppApiServer.Models
@@ -6,7 +7,7 @@ namespace WhatsAppApiServer.Models
     public class Message
     {
         [Key]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [StringLength(2000)]
         [Required]
@@ -15,12 +16,12 @@ namespace WhatsAppApiServer.Models
 
         [Required]
         [DataType(DataType.DateTime)]
-        public DateTime? Created { get; set; }
+        public DateTime Created { get; set; }
 
         [Required]
         public bool Sent { get; set; }
 
         [JsonIgnore]
-        public virtual Contact Contact { get; set; }
+        public Contact Contact { get; set; }
     }
 }

@@ -11,7 +11,7 @@ using WhatsAppApiServer.Data;
 namespace WhatsAppApiServer.Migrations
 {
     [DbContext(typeof(WhatsAppApiContext))]
-    [Migration("20220513150040_Init")]
+    [Migration("20220513180349_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
