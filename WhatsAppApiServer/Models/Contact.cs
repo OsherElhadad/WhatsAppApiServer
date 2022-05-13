@@ -13,10 +13,10 @@ namespace WhatsAppApiServer.Models
 
         [Key, Column(Order = 1)]
         [JsonIgnore]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         [JsonIgnore]
-        public User User { get; set; }
+        public User? User { get; set; }
 
         [Required]
         [StringLength(100)]

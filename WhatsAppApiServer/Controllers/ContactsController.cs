@@ -32,7 +32,7 @@ namespace WhatsAppApiServer.Controllers
 
             var userContacts = from contact in contacts where contact.UserId == current select contact;
 
-            return Ok(contacts);
+            return Ok(userContacts);
         }
 
         // GET: Contacts/5
@@ -76,6 +76,10 @@ namespace WhatsAppApiServer.Controllers
                 contact.Messages = new List<Message>();
                 contact.Last = null;
                 contact.LastDate = null;
+                if (user.Contacts == null)
+                {
+                    user.Contacts = new List<Contact>();
+                }
                 user.Contacts.Add(contact);
                 _context.Contacts.Add(contact);
                 await _context.SaveChangesAsync();
