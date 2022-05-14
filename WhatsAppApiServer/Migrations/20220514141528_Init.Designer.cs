@@ -11,7 +11,7 @@ using WhatsAppApiServer.Data;
 namespace WhatsAppApiServer.Migrations
 {
     [DbContext(typeof(WhatsAppApiContext))]
-    [Migration("20220513180349_Init")]
+    [Migration("20220514141528_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,16 +56,11 @@ namespace WhatsAppApiServer.Migrations
 
             modelBuilder.Entity("WhatsAppApiServer.Models.Message", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("ContactId")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("ContactUserId")
-                        .IsRequired()
                         .HasColumnType("varchar(100)");
 
                     b.Property<string>("Content")
@@ -73,16 +68,18 @@ namespace WhatsAppApiServer.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("varchar(2000)");
 
-                    b.Property<DateTime?>("Created")
-                        .IsRequired()
+                    b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
 
                     b.Property<bool>("Sent")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(100)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ContactId", "ContactUserId");
+                    b.HasIndex("ContactId", "UserId");
 
                     b.ToTable("Messages");
                 });
@@ -117,9 +114,7 @@ namespace WhatsAppApiServer.Migrations
                 {
                     b.HasOne("WhatsAppApiServer.Models.Contact", "Contact")
                         .WithMany("Messages")
-                        .HasForeignKey("ContactId", "ContactUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContactId", "UserId");
 
                     b.Navigation("Contact");
                 });

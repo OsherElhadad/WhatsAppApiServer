@@ -66,20 +66,19 @@ namespace WhatsAppApiServer.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Created = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Sent = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    ContactId = table.Column<string>(type: "varchar(100)", nullable: false)
+                    ContactId = table.Column<string>(type: "varchar(100)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ContactUserId = table.Column<string>(type: "varchar(100)", nullable: false)
+                    UserId = table.Column<string>(type: "varchar(100)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Messages_Contacts_ContactId_ContactUserId",
-                        columns: x => new { x.ContactId, x.ContactUserId },
+                        name: "FK_Messages_Contacts_ContactId_UserId",
+                        columns: x => new { x.ContactId, x.UserId },
                         principalTable: "Contacts",
-                        principalColumns: new[] { "Id", "UserId" },
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumns: new[] { "Id", "UserId" });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -89,9 +88,9 @@ namespace WhatsAppApiServer.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_ContactId_ContactUserId",
+                name: "IX_Messages_ContactId_UserId",
                 table: "Messages",
-                columns: new[] { "ContactId", "ContactUserId" });
+                columns: new[] { "ContactId", "UserId" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

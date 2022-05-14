@@ -63,14 +63,14 @@ namespace WhatsAppApiServer.Controllers
 
         // POST: Messages
         [HttpPost]
-        public async Task<IActionResult> PostMessages(string id, string content)
+        public async Task<IActionResult> PostMessages(string id, [Bind("Content")] Message message)
         {
             string? current = getCurrentLogedUser();
             if (current == null)
             {
                 return Unauthorized();
             }
-            if (!await _service.AddMessage(current, id, content))
+            if (!await _service.AddMessage(current, id, message.Content))
             {
                 return BadRequest();
             }
@@ -79,14 +79,14 @@ namespace WhatsAppApiServer.Controllers
 
         // PUT: Messages/5
         [HttpPut("{id2}")]
-        public async Task<IActionResult> PutMessages(string id, int id2, string content)
+        public async Task<IActionResult> PutMessages(string id, int id2, [Bind("Content")] Message message)
         {
             string? current = getCurrentLogedUser();
             if (current == null)
             {
                 return Unauthorized();
             }
-            if (!await _service.UpdateMessage(current, id, id2, content))
+            if (!await _service.UpdateMessage(current, id, id2, message.Content))
             {
                 return NotFound();
             }

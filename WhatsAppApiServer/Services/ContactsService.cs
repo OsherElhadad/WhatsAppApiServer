@@ -69,6 +69,7 @@ namespace WhatsAppApiServer.Services
                     user.Contacts = new List<Contact>();
                 }
                 user.Contacts.Add(contact);
+                _context.Users.Update(user);
                 _context.Contacts.Add(contact);
                 await _context.SaveChangesAsync();
             }
@@ -112,11 +113,21 @@ namespace WhatsAppApiServer.Services
             }
             try
             {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null)
+                {
+                    return false;
+                }
                 var userContact = await GetContact(userId, contactId);
                 if (userContact == null)
                 {
                     return false;
                 }
+                if (user.Contacts != null && user.Contacts.Count > 0)
+                {
+                    user.Contacts.Remove(userContact);
+                }
+                _context.Users.Update(user);
                 _context.Contacts.Remove(userContact);
                 await _context.SaveChangesAsync();
             }

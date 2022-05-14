@@ -19,10 +19,10 @@ namespace WhatsAppApiServer.Data
 
             modelBuilder.Entity<Contact>().HasKey(c => new { c.Id, c.UserId });
             modelBuilder.Entity<Contact>().HasOne(c => c.User).WithMany(u => u.Contacts).HasForeignKey(c => c.UserId);
-            modelBuilder.Entity<Contact>().HasMany(c => c.Messages).WithOne(m => m.Contact);
+            modelBuilder.Entity<Contact>().HasMany(c => c.Messages).WithOne(m => m.Contact).HasForeignKey(m => new { m.ContactId, m.UserId });
 
             modelBuilder.Entity<Message>().HasKey(m => m.Id);
-            modelBuilder.Entity<Message>().HasOne(m => m.Contact).WithMany(c => c.Messages);
+            modelBuilder.Entity<Message>().HasOne(m => m.Contact).WithMany(c => c.Messages).HasForeignKey(m => new { m.ContactId, m.UserId });
         }
 
         public DbSet<User> Users { get; set; }

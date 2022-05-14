@@ -20,7 +20,7 @@ namespace WhatsAppApiServer.Services
                 return null;
             }
 
-            var userContactMessages = from message in messages where message.Contact.UserId == userId && message.Contact.Id == contactId select message;
+            var userContactMessages = from message in messages where message.UserId == userId && message.ContactId == contactId select message;
 
             return userContactMessages.ToList();
         }
@@ -60,6 +60,8 @@ namespace WhatsAppApiServer.Services
                 contact.Last = content;
                 contact.LastDate = message.Created;
                 message.Contact = contact;
+                message.ContactId = contactId;
+                message.UserId = userId;
 
                 if (contact.Messages == null)
                 {
@@ -67,6 +69,7 @@ namespace WhatsAppApiServer.Services
                 }
                 contact.Messages.Add(message);
                 _context.Messages.Add(message);
+                _context.Contacts.Update(contact);
                 await _context.SaveChangesAsync();
             }
             catch (Exception)
@@ -90,10 +93,17 @@ namespace WhatsAppApiServer.Services
                     return false;
                 }
                 oldMessage.Created = DateTime.Now;
-                oldMessage.Contact.Last = content;
-                oldMessage.Contact.LastDate = oldMessage.Created;
+                oldMessage.Content = content;
+                var contact = await _context.Contacts.FirstOrDefaultAsync(u => u.Id == contactId && u.UserId == userId);
+                if (contact == null)
+                {
+                    return false;
+                }
+                contact.LastDate = oldMessage.Created;
+                contact.Last = content;
 
-                _context.Update(oldMessage);
+                _context.Contacts.Update(contact);
+                _context.Messages.Update(oldMessage);
                 await _context.SaveChangesAsync();
             }
             catch (Exception)
@@ -116,11 +126,17 @@ namespace WhatsAppApiServer.Services
                 {
                     return false;
                 }
-                if (userContactMessage.Contact.Messages != null)
+                var contact = await _context.Contacts.FirstOrDefaultAsync(u => u.Id == contactId && u.UserId == userId);
+                if (contact == null)
                 {
-                    userContactMessage.Contact.Messages.Remove(userContactMessage);
+                    return false;
+                }
+                if (contact.Messages != null)
+                {
+                    contact.Messages.Remove(userContactMessage);
                 }
                 _context.Messages.Remove(userContactMessage);
+                _context.Contacts.Update(contact);
                 await _context.SaveChangesAsync();
             }
             catch (Exception)
@@ -132,7 +148,7 @@ namespace WhatsAppApiServer.Services
 
         private bool MessageExists(string userId, string contactId, int messageId)
         {
-            return _context.Messages.Any(m => m.Id == messageId && m.Contact.Id == contactId && m.Contact.UserId == userId);
+            return _context.Messages.Any(m => m.Id == messageId && m.ContactId == contactId && m.UserId == userId);
         }
     }
 }

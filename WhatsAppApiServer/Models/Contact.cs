@@ -13,10 +13,10 @@ namespace WhatsAppApiServer.Models
 
         [Key, Column(Order = 1)]
         [JsonIgnore]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         [JsonIgnore]
-        public User User { get; set; }
+        public User? User { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -30,10 +30,8 @@ namespace WhatsAppApiServer.Models
         [JsonIgnore]
         public List<Message>? Messages { get; set; }
 
-        [JsonIgnore]
         public string? Last { get; set; }
 
-        [JsonIgnore]
         public DateTime? LastDate { get; set; }
     }
 }
