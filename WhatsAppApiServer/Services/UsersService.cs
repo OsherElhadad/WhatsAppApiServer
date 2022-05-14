@@ -35,7 +35,7 @@ namespace WhatsAppApiServer.Services
             try
             {
                 user.Contacts = new List<Contact>();
-                _context.Add(user);
+                _context.Users.Add(user);
                 await _context.SaveChangesAsync();
             }
             catch (Exception)

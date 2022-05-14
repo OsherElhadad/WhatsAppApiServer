@@ -1,6 +1,50 @@
-﻿namespace WhatsAppApiServer.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+using WhatsAppApiServer.Services;
+
+namespace WhatsAppApiServer.Controllers
 {
     public class InvitationsController
     {
+        [ApiController]
+        [Route("api/[controller]")]
+        public class LogInController : ControllerBase
+        {
+            private readonly UsersService _service;
+            public LogInController(UsersService service)
+            {
+                _service = service;
+            }
+
+            // POST: Users
+            [HttpPost]
+            public IActionResult PostUsers([Bind("Id,Password")] User user)
+            {
+                if (ModelState.IsValid)
+                {
+                    if (!_service.UserNameAndPassExists(user.Id, user.Password))
+                    {
+                        return NotFound();
+                    }
+                    var claims = new[] {
+                        new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                        new Claim("Id", user.Id),
+                    };
+
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                    var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                    var token = new JwtSecurityToken(
+                        _configuration["Jwt:Issuer"],
+                        _configuration["Jwt:Audience"],
+                        claims,
+                        expires: DateTime.UtcNow.AddMinutes(20),
+                        signingCredentials: signIn);
+
+                    return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                }
+                return NotFound();
+            }
+        }
     }
 }
