@@ -75,7 +75,7 @@ namespace WhatsAppApiServer.Controllers
                 {
                     return BadRequest();
                 }
-                return CreatedAtAction(nameof(PostContacts), null, contact);
+                return Created(nameof(PostContacts), null);
             }
             return BadRequest();
         }

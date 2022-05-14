@@ -74,7 +74,7 @@ namespace WhatsAppApiServer.Controllers
             {
                 return BadRequest();
             }
-            return CreatedAtAction(nameof(PostMessages), null, null);
+            return Created(nameof(PostMessages), null);
         }
 
         // PUT: Messages/5

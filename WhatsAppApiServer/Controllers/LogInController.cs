@@ -20,13 +20,13 @@ namespace WhatsAppApiServer.Controllers
             _configuration = configuration;
         }
 
-        // POST: Users
+        // POST: LogIn
         [HttpPost]
-        public IActionResult PostUsers([Bind("Id,Password")] User user)
+        public IActionResult PostLogIn([Bind("Id,Password")] User user)
         {
             if (ModelState.IsValid)
             {
-                if (!_service.UserNameAndPassExists(user.Id, user.Password))
+                if (user == null || user.Id == null || !_service.UserNameAndPassExists(user.Id, user.Password))
                 {
                     return NotFound();
                 }

@@ -48,7 +48,7 @@ namespace WhatsAppApiServer.Services
 
         public async Task<bool> AddContact(string userId, Contact contact)
         {
-            if (contact == null || ContactExists(userId, contact.Id))
+            if (contact == null || contact.Id == null || ContactExists(userId, contact.Id))
             {
                 return false;
             }
@@ -138,7 +138,7 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        private bool ContactExists(string userId, string contactId)
+        public bool ContactExists(string userId, string contactId)
         {
             return _context.Contacts.Any(c => c.Id == contactId && c.UserId == userId);
         }

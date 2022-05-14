@@ -79,6 +79,41 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
+        public async Task<bool> AddMessageTransfer(string userId, string contactId, string content)
+        {
+            try
+            {
+                var contact = await _context.Contacts.FirstOrDefaultAsync(u => u.Id == contactId && u.UserId == userId);
+                if (contact == null)
+                {
+                    return false;
+                }
+                var message = new Message();
+                message.Created = DateTime.Now;
+                message.Content = content;
+                message.Sent = true;
+                contact.Last = content;
+                contact.LastDate = message.Created;
+                message.Contact = contact;
+                message.ContactId = contactId;
+                message.UserId = userId;
+
+                if (contact.Messages == null)
+                {
+                    contact.Messages = new List<Message>();
+                }
+                contact.Messages.Add(message);
+                _context.Messages.Add(message);
+                _context.Contacts.Update(contact);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public async Task<bool> UpdateMessage(string userId, string contactId, int messageId, string content)
         {
             if (!MessageExists(userId, contactId, messageId))

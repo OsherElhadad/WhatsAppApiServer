@@ -51,7 +51,7 @@ namespace WhatsAppApiServer.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (! await _service.AddUser(user))
+                if (user == null || user.Id == null || ! await _service.AddUser(user))
                 {
                     return BadRequest();
                 }
