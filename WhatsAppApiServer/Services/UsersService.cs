@@ -98,5 +98,10 @@ namespace WhatsAppApiServer.Services
         {
             return _context.Users.Any(u => u.Id == id);
         }
+
+        public bool UserNameAndPassExists(string id, string pass)
+        {
+            return _context.Users.Any(u => u.Id == id && u.Password == pass);
+        }
     }
 }
