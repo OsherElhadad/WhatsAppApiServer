@@ -78,9 +78,9 @@ namespace WhatsAppApiServer.Controllers
 
         // PUT: Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsers(string id, string password)
+        public async Task<IActionResult> PutUsers(string id, [Bind("Password")] User user)
         {
-            if (! await _service.UpdateUser(id, password))
+            if (! await _service.UpdateUser(id, user.Password))
             {
                 return BadRequest();
             }

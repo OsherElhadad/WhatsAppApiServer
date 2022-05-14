@@ -9,7 +9,7 @@ namespace WhatsAppApiServer.Models
         [Key, Column(Order = 0)]
         [StringLength(100)]
         [RegularExpression(@"^[a-zA-Z0-9]{2}[a-zA-Z0-9]+$")]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         [Key, Column(Order = 1)]
         [JsonIgnore]

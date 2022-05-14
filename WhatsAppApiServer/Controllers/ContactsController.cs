@@ -82,14 +82,14 @@ namespace WhatsAppApiServer.Controllers
 
         // PUT: Contacts/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutContacts(string id, string name, string server)
+        public async Task<IActionResult> PutContacts(string id, [Bind("Name,Server")] Contact contact)
         {
             string? current = getCurrentLogedUser();
             if (current == null)
             {
                 return Unauthorized();
             }
-            if (!await _service.UpdateContact(current, id, name, server))
+            if (!await _service.UpdateContact(current, id, contact.Name, contact.Server))
             {
                 return NotFound();
             }
