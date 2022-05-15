@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WhatsAppApiServer.Data;
+using WhatsAppApiServer.Hubs;
 using WhatsAppApiServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<WhatsAppApiContext>();
 builder.Services.AddScoped<UsersService>();
@@ -52,10 +55,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("Allow All");
 
+app.UseRouting();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<MyHub>("/myHub");
+});
 
 app.Run();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WhatsAppApiServer.Hubs;
 using WhatsAppApiServer.Models;
 using WhatsAppApiServer.Services;
 
@@ -9,16 +10,18 @@ namespace WhatsAppApiServer.Controllers
     public class TransferController : ControllerBase
     {
         private readonly MessagesService _messagesService;
-        public TransferController(MessagesService messagesService)
+        private readonly MyHub _myHub;
+        public TransferController(MessagesService messagesService, MyHub myHub)
         {
             _messagesService = messagesService;
+            _myHub = myHub;
         }
 
         // POST: Transfer
         [HttpPost]
         public async Task<IActionResult> PostTransfer([Bind("From,To,Content")] Transfer transfer)
         {
-            if (transfer.From == null || transfer.To == null || transfer.Content == null)
+            if (transfer == null || transfer.From == null || transfer.To == null || transfer.Content == null)
             {
                 return BadRequest();
             }
@@ -26,6 +29,7 @@ namespace WhatsAppApiServer.Controllers
             {
                 return BadRequest();
             }
+            await _myHub.MessageChanged(transfer);
 
             return Created(nameof(PostTransfer), null);
         }
