@@ -5,14 +5,14 @@ namespace WhatsAppApiServer.Hubs
 {
     public class MyHub : Hub
     {
-        public async Task MessageChanged(Transfer transfer)
+        public async Task MessageChanged(List<Contact>? contacts)
         {
-            await Clients.All.SendAsync("MessageChangeRecieved", transfer.From, transfer.To, transfer.Content);
+            await Clients.All.SendAsync("MessageChangeRecieved", contacts);
         }
 
-        public async Task ContactChanged(Invitation invitation)
+        public async Task ContactChanged(List<Contact>? contacts)
         {
-            await Clients.All.SendAsync("ContactChangeRecieved", invitation.From, invitation.To, invitation.Server);
+            await Clients.All.SendAsync("ContactChangeRecieved", contacts);
         }
     }
 }

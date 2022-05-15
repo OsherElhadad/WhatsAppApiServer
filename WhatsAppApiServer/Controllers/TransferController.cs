@@ -10,11 +10,13 @@ namespace WhatsAppApiServer.Controllers
     public class TransferController : ControllerBase
     {
         private readonly MessagesService _messagesService;
+        private readonly ContactsService _contactsService;
         private readonly MyHub _myHub;
-        public TransferController(MessagesService messagesService, MyHub myHub)
+        public TransferController(MessagesService messagesService, ContactsService contactsService, MyHub myHub)
         {
             _messagesService = messagesService;
             _myHub = myHub;
+            _contactsService = contactsService;
         }
 
         // POST: Transfer
@@ -29,7 +31,8 @@ namespace WhatsAppApiServer.Controllers
             {
                 return BadRequest();
             }
-            await _myHub.MessageChanged(transfer);
+            var contacts = await _contactsService.GetContacts(transfer.To);
+            await _myHub.MessageChanged(contacts);
 
             return Created(nameof(PostTransfer), null);
         }

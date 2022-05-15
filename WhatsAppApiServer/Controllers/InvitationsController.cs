@@ -33,7 +33,8 @@ namespace WhatsAppApiServer.Controllers
             {
                 return BadRequest();
             }
-            await _myHub.ContactChanged(invitation);
+            var contacts = await _contactsService.GetContacts(invitation.To);
+            await _myHub.ContactChanged(contacts);
 
             return Created(nameof(PostInvitations), null);
         }
