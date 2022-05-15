@@ -16,17 +16,17 @@ namespace WhatsAppApiServer.Controllers
 
         // POST: Invitations
         [HttpPost]
-        public async Task<IActionResult> PostInvitations(string from, string to, string server)
+        public async Task<IActionResult> PostInvitations([Bind("From,To,Server")] Invitation invitation)
         {
-            if (from == null || to == null || server == null)
+            if (invitation.From == null || invitation.To == null || invitation.Server == null)
             {
                 return BadRequest();
             }
             var contact = new Contact();
-            contact.Id = to;
-            contact.Name = to;
-            contact.Server = server;
-            if (!await _contactsService.AddContact(from, contact))
+            contact.Id = invitation.From;
+            contact.Name = invitation.From;
+            contact.Server = invitation.Server;
+            if (!await _contactsService.AddContact(invitation.To, contact))
             {
                 return BadRequest();
             }

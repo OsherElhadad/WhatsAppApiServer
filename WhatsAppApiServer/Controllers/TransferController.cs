@@ -16,13 +16,13 @@ namespace WhatsAppApiServer.Controllers
 
         // POST: Transfer
         [HttpPost]
-        public async Task<IActionResult> PostTransfer(string from, string to, string content)
+        public async Task<IActionResult> PostTransfer([Bind("From,To,Content")] Transfer transfer)
         {
-            if (from == null || to == null || content == null)
+            if (transfer.From == null || transfer.To == null || transfer.Content == null)
             {
                 return BadRequest();
             }
-            if (!await _messagesService.AddMessageTransfer(from, to, content))
+            if (!await _messagesService.AddMessageTransfer(transfer.To, transfer.From, transfer.Content))
             {
                 return BadRequest();
             }
