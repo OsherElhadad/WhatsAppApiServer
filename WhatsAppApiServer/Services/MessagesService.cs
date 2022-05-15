@@ -15,7 +15,7 @@ namespace WhatsAppApiServer.Services
         public async Task<List<Message>?> GetMessages(string userId, string contactId)
         {
             var messages = await _context.Messages.ToListAsync();
-            if (messages == null)
+            if (messages == null || userId == null)
             {
                 return null;
             }
@@ -56,7 +56,7 @@ namespace WhatsAppApiServer.Services
                 var message = new Message();
                 message.Created = DateTime.Now;
                 message.Content = content;
-                message.Sent = false;
+                message.Sent = true;
                 contact.Last = content;
                 contact.LastDate = message.Created;
                 message.Contact = contact;
@@ -91,7 +91,7 @@ namespace WhatsAppApiServer.Services
                 var message = new Message();
                 message.Created = DateTime.Now;
                 message.Content = content;
-                message.Sent = true;
+                message.Sent = false;
                 contact.Last = content;
                 contact.LastDate = message.Created;
                 message.Contact = contact;
@@ -181,7 +181,27 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        private bool MessageExists(string userId, string contactId, int messageId)
+        public async Task<bool> DeleteMessagesOfContact(string? userId, string? contactId)
+        {
+            if (userId == null || contactId == null)
+            {
+                return false;
+            }
+            var contactMessages = await GetMessages(userId, contactId);
+            if (contactMessages == null)
+            {
+                return true;
+            }
+            foreach (var message in contactMessages)
+            {
+                if (!await DeleteMessage(userId, contactId, message.Id))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public bool MessageExists(string userId, string contactId, int messageId)
         {
             return _context.Messages.Any(m => m.Id == messageId && m.ContactId == contactId && m.UserId == userId);
         }

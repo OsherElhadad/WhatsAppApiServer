@@ -8,16 +8,18 @@ namespace WhatsAppApiServer.Services
     public class ContactsService
     {
         private readonly WhatsAppApiContext _context;
-        public ContactsService(WhatsAppApiContext contactsContext)
+        private readonly MessagesService _service;
+        public ContactsService(WhatsAppApiContext contactsContext, MessagesService service)
         {
             _context = contactsContext;
+            _service = service;
         }
 
         public async Task<List<Contact>?> GetContacts(string userId)
         {
             var contacts = await _context.Contacts.ToListAsync();
 
-            if (contacts == null)
+            if (contacts == null || userId == null)
             {
                 return null;
             }
@@ -31,7 +33,7 @@ namespace WhatsAppApiServer.Services
         {
             var usersContact = await GetContacts(userId);
             
-            if (usersContact == null)
+            if (usersContact == null || contactId == null)
             {
                 return null;
             }
@@ -82,7 +84,8 @@ namespace WhatsAppApiServer.Services
 
         public async Task<bool> UpdateContact(string userId, string contactId, string newName, string newServer)
         {
-            if (!ContactExists(userId, contactId))
+            if (userId == null || contactId == null || newName == null ||
+                newServer == null || !ContactExists(userId, contactId))
             {
                 return false;
             }
@@ -107,7 +110,7 @@ namespace WhatsAppApiServer.Services
 
         public async Task<bool> DeleteContact(string userId, string contactId)
         {
-            if (!ContactExists(userId, contactId))
+            if (userId == null || contactId == null || !ContactExists(userId, contactId))
             {
                 return false;
             }
@@ -127,6 +130,10 @@ namespace WhatsAppApiServer.Services
                 {
                     user.Contacts.Remove(userContact);
                 }
+                if (!await _service.DeleteMessagesOfContact(userId, contactId))
+                {
+                    return false;
+                }
                 _context.Users.Update(user);
                 _context.Contacts.Remove(userContact);
                 await _context.SaveChangesAsync();
@@ -134,6 +141,27 @@ namespace WhatsAppApiServer.Services
             catch (Exception)
             {
                 return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> DeleteContactsOfUser(string userId)
+        {
+            if (userId == null)
+            {
+                return false;
+            }
+            var userContacts = await GetContacts(userId);
+            if (userContacts == null)
+            {
+                return true;
+            }
+            foreach (var contact in userContacts)
+            {
+                if (!await _service.DeleteMessagesOfContact(userId, contact.Id))
+                {
+                    return false;
+                }
             }
             return true;
         }

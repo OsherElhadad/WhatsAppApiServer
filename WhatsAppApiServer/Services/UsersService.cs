@@ -8,9 +8,11 @@ namespace WhatsAppApiServer.Services
     public class UsersService
     {
         private readonly WhatsAppApiContext _context;
-        public UsersService(WhatsAppApiContext usersContext)
+        private readonly ContactsService _service;
+        public UsersService(WhatsAppApiContext usersContext, ContactsService service)
         {
             _context = usersContext;
+            _service = service;
         }
 
         public async Task<List<User>> GetUsers()
@@ -28,7 +30,7 @@ namespace WhatsAppApiServer.Services
 
         public async Task<bool> AddUser(User user)
         {
-            if (user == null || UserExists(user.Id))
+            if (user == null || user.Id == null || UserExists(user.Id))
             {
                 return false;
             }
@@ -47,7 +49,7 @@ namespace WhatsAppApiServer.Services
 
         public async Task<bool> UpdateUser(string oldId, string newPass)
         {
-            if (!UserExists(oldId))
+            if (oldId == null || newPass == null || !UserExists(oldId))
             {
                 return false;
             }
@@ -72,7 +74,7 @@ namespace WhatsAppApiServer.Services
 
         public async Task<bool> DeleteUser(string id)
         {
-            if (!UserExists(id))
+            if (id == null || !UserExists(id))
             {
                 return false;
             }
@@ -81,6 +83,10 @@ namespace WhatsAppApiServer.Services
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Id == id);
                 if (user == null)
+                {
+                    return false;
+                }
+                if (!await _service.DeleteContactsOfUser(id))
                 {
                     return false;
                 }
