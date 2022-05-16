@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using WhatsAppApiServer.Hubs;
 using WhatsAppApiServer.Models;
 using WhatsAppApiServer.Services;
@@ -11,8 +12,8 @@ namespace WhatsAppApiServer.Controllers
     {
         private readonly MessagesService _messagesService;
         private readonly ContactsService _contactsService;
-        private readonly MyHub _myHub;
-        public TransferController(MessagesService messagesService, ContactsService contactsService, MyHub myHub)
+        private readonly IHubContext<MyHub> _myHub;
+        public TransferController(MessagesService messagesService, ContactsService contactsService, IHubContext<MyHub> myHub)
         {
             _messagesService = messagesService;
             _myHub = myHub;
@@ -32,7 +33,7 @@ namespace WhatsAppApiServer.Controllers
                 return BadRequest();
             }
             var contacts = await _contactsService.GetContacts(transfer.To);
-            await _myHub.MessageChanged(contacts);
+            await _myHub.Clients.All.SendAsync("MessageChangeRecieved", contacts);
 
             return Created(nameof(PostTransfer), null);
         }

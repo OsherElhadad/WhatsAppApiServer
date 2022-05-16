@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using WhatsAppApiServer.Hubs;
 using WhatsAppApiServer.Models;
 using WhatsAppApiServer.Services;
@@ -10,8 +11,8 @@ namespace WhatsAppApiServer.Controllers
     public class InvitationsController : ControllerBase
     {
         private readonly ContactsService _contactsService;
-        private readonly MyHub _myHub;
-        public InvitationsController(ContactsService contactsService, MyHub myHub)
+        private readonly IHubContext<MyHub> _myHub;
+        public InvitationsController(ContactsService contactsService, IHubContext<MyHub> myHub)
         {
             _contactsService = contactsService;
             _myHub = myHub;
@@ -34,7 +35,7 @@ namespace WhatsAppApiServer.Controllers
                 return BadRequest();
             }
             var contacts = await _contactsService.GetContacts(invitation.To);
-            await _myHub.ContactChanged(contacts);
+            await _myHub.Clients.All.SendAsync("ContactChangeRecieved", contacts);
 
             return Created(nameof(PostInvitations), null);
         }

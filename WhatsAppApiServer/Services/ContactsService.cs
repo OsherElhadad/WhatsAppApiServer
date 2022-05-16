@@ -133,7 +133,7 @@ namespace WhatsAppApiServer.Services
                 if (!await _service.DeleteMessagesOfContact(userId, contactId))
                 {
                     return false;
-                }+
+                }
                 _context.Users.Update(user);
                 _context.Contacts.Remove(userContact);
                 await _context.SaveChangesAsync();
