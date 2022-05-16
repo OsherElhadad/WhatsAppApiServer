@@ -44,16 +44,16 @@ namespace WhatsAppApiServer.Services
             return userContactMessage.FirstOrDefault();
         }
 
-        public async Task<bool> AddMessage(string userId, string contactId, string content)
+        public async Task<Message?> AddMessage(string userId, string contactId, string content)
         {
+            var message = new Message();
             try
             {
                 var contact = await _context.Contacts.FirstOrDefaultAsync(u => u.Id == contactId && u.UserId == userId);
                 if (contact == null)
                 {
-                    return false;
+                    return null;
                 }
-                var message = new Message();
                 message.Created = DateTime.Now;
                 message.Content = content;
                 message.Sent = true;
@@ -74,21 +74,21 @@ namespace WhatsAppApiServer.Services
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
-            return true;
+            return message;
         }
 
-        public async Task<bool> AddMessageTransfer(string userId, string contactId, string content)
+        public async Task<Message?> AddMessageTransfer(string userId, string contactId, string content)
         {
+            var message = new Message();
             try
             {
                 var contact = await _context.Contacts.FirstOrDefaultAsync(u => u.Id == contactId && u.UserId == userId);
                 if (contact == null)
                 {
-                    return false;
+                    return null;
                 }
-                var message = new Message();
                 message.Created = DateTime.Now;
                 message.Content = content;
                 message.Sent = false;
@@ -109,9 +109,9 @@ namespace WhatsAppApiServer.Services
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
-            return true;
+            return message;
         }
 
         public async Task<bool> UpdateMessage(string userId, string contactId, int messageId, string content)

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using WhatsAppApiServer.Data;
+using WhatsAppApiServer.Hubs;
 using WhatsAppApiServer.Models;
 using WhatsAppApiServer.Services;
 
@@ -12,11 +14,15 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/Contacts/{id}/[controller]")]
     public class MessagesController : ControllerBase
     {
-        private readonly MessagesService _service;
+        private readonly MessagesService _messagesService;
+        private readonly ContactsService _contactsService;
+        private readonly IHubContext<MyHub> _myHub;
 
-        public MessagesController(MessagesService messagesService)
+        public MessagesController(MessagesService messagesService, ContactsService contactsService, IHubContext<MyHub> myHub)
         {
-            _service = messagesService;
+            _messagesService = messagesService;
+            _contactsService = contactsService;
+            _myHub = myHub;
         }
 
         // GET: Messages
@@ -30,7 +36,7 @@ namespace WhatsAppApiServer.Controllers
                 return Unauthorized();
             }
 
-            var userContactMessages = await _service.GetMessages(current, id);
+            var userContactMessages = await _messagesService.GetMessages(current, id);
 
             if (userContactMessages == null)
             {
@@ -51,7 +57,7 @@ namespace WhatsAppApiServer.Controllers
                 return Unauthorized();
             }
 
-            var userContactMessage = await _service.GetMessage(current, id, id2);
+            var userContactMessage = await _messagesService.GetMessage(current, id, id2);
 
             if (userContactMessage == null)
             {
@@ -70,10 +76,13 @@ namespace WhatsAppApiServer.Controllers
             {
                 return Unauthorized();
             }
-            if (!await _service.AddMessage(current, id, message.Content))
+            var newMessage = await _messagesService.AddMessage(current, id, message.Content);
+            if (newMessage == null)
             {
                 return BadRequest();
             }
+            var contact = await _contactsService.GetContact(current, id);
+            await _myHub.Clients.All.SendAsync("MessageChangeRecieved", contact, newMessage);
             return Created(nameof(PostMessages), null);
         }
 
@@ -86,7 +95,7 @@ namespace WhatsAppApiServer.Controllers
             {
                 return Unauthorized();
             }
-            if (!await _service.UpdateMessage(current, id, id2, message.Content))
+            if (!await _messagesService.UpdateMessage(current, id, id2, message.Content))
             {
                 return NotFound();
             }
@@ -102,7 +111,7 @@ namespace WhatsAppApiServer.Controllers
             {
                 return Unauthorized();
             }
-            if (!await _service.DeleteMessage(current, id, id2))
+            if (!await _messagesService.DeleteMessage(current, id, id2))
             {
                 return NotFound();
             }

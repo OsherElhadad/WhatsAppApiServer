@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using WhatsAppApiServer.Data;
+using WhatsAppApiServer.Hubs;
 using WhatsAppApiServer.Models;
 using WhatsAppApiServer.Services;
 
@@ -13,10 +15,12 @@ namespace WhatsAppApiServer.Controllers
     public class ContactsController : ControllerBase
     {
         private readonly ContactsService _service;
+        private readonly IHubContext<MyHub> _myHub;
 
-        public ContactsController(ContactsService contactsService)
+        public ContactsController(ContactsService contactsService, IHubContext<MyHub> myHub)
         {
             _service = contactsService;
+            _myHub = myHub;
         }
 
         // GET: Contacts
@@ -75,6 +79,7 @@ namespace WhatsAppApiServer.Controllers
                 {
                     return BadRequest();
                 }
+                await _myHub.Clients.All.SendAsync("ContactChangeRecieved", contact);
                 return Created(nameof(PostContacts), null);
             }
             return BadRequest();

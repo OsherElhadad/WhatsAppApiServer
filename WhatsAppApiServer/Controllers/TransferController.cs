@@ -28,12 +28,13 @@ namespace WhatsAppApiServer.Controllers
             {
                 return BadRequest();
             }
-            if (!await _messagesService.AddMessageTransfer(transfer.To, transfer.From, transfer.Content))
+            var message = await _messagesService.AddMessageTransfer(transfer.To, transfer.From, transfer.Content);
+            if (message == null)
             {
                 return BadRequest();
             }
-            var contacts = await _contactsService.GetContacts(transfer.To);
-            await _myHub.Clients.All.SendAsync("MessageChangeRecieved", contacts);
+            var contact = await _contactsService.GetContact(transfer.To, transfer.From);
+            await _myHub.Clients.All.SendAsync("MessageChangeRecieved", contact, message);
 
             return Created(nameof(PostTransfer), null);
         }
