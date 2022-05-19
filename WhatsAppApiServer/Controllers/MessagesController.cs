@@ -82,7 +82,7 @@ namespace WhatsAppApiServer.Controllers
                 return BadRequest();
             }
             var contact = await _contactsService.GetContact(current, id);
-            await _myHub.Clients.All.SendAsync("MessageChangeRecieved", contact, newMessage);
+            await _myHub.Clients.Groups(current).SendAsync("MessageChangeRecieved", contact, newMessage);
             return Created(nameof(PostMessages), null);
         }
 

@@ -34,7 +34,7 @@ namespace WhatsAppApiServer.Controllers
             {
                 return BadRequest();
             }
-            await _myHub.Clients.All.SendAsync("ContactChangeRecieved", contact);
+            await _myHub.Clients.Groups(invitation.To).SendAsync("ContactChangeRecieved", contact);
 
             return Created(nameof(PostInvitations), null);
         }

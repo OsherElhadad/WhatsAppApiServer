@@ -1,18 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using WhatsAppApiServer.Models;
+using WhatsAppApiServer.Services;
 
 namespace WhatsAppApiServer.Hubs
 {
     public class MyHub : Hub
     {
-        public async Task MessageChanged(List<Contact>? contacts)
+        public async Task Connect(string username)
         {
-            await Clients.All.SendAsync("MessageChangeRecieved", contacts);
-        }
-
-        public async Task ContactChanged(List<Contact>? contacts)
-        {
-            await Clients.All.SendAsync("ContactChangeRecieved", contacts);
+            await Groups.AddToGroupAsync(Context.ConnectionId, username);
         }
     }
 }
