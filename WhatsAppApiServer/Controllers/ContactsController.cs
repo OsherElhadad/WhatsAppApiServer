@@ -15,12 +15,14 @@ namespace WhatsAppApiServer.Controllers
     public class ContactsController : ControllerBase
     {
         private readonly ContactsService _service;
+        private readonly HubService _hubService;
         private readonly IHubContext<MyHub> _myHub;
 
-        public ContactsController(ContactsService contactsService, IHubContext<MyHub> myHub)
+        public ContactsController(ContactsService contactsService, IHubContext<MyHub> myHub, HubService hubService)
         {
             _service = contactsService;
             _myHub = myHub;
+            _hubService = hubService;
         }
 
         // GET: Contacts
@@ -79,10 +81,15 @@ namespace WhatsAppApiServer.Controllers
                 {
                     return BadRequest();
                 }
-                await _myHub.Clients.Groups(current).SendAsync("ContactChangeRecieved", contact);
-                return Created(nameof(PostContacts), null);
+
+                string? connectionID = _hubService.GetConnectionId(current);
+
+                if (connectionID != null)
+                {
+                    await _myHub.Clients.Client(connectionID).SendAsync("ContactChangeRecieved", contact);
+                }
             }
-            return BadRequest();
+            return Created(nameof(PostContacts), null);
         }
 
         // PUT: Contacts/5

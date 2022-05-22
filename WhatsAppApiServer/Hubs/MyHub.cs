@@ -6,9 +6,13 @@ namespace WhatsAppApiServer.Hubs
 {
     public class MyHub : Hub
     {
+        private readonly HubService _hubService;
+        public MyHub(HubService hubService) { 
+            _hubService = hubService;
+        }
         public async Task Connect(string username)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, username);
+            _hubService.AddUserConnection(username, Context.ConnectionId);
         }
     }
 }
