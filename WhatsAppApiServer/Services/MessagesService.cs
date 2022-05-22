@@ -58,7 +58,7 @@ namespace WhatsAppApiServer.Services
                 message.Content = content;
                 message.Sent = true;
                 contact.Last = content;
-                contact.LastDate = message.Created;
+                contact.Lastdate = message.Created;
                 message.Contact = contact;
                 message.ContactId = contactId;
                 message.UserId = userId;
@@ -93,7 +93,7 @@ namespace WhatsAppApiServer.Services
                 message.Content = content;
                 message.Sent = false;
                 contact.Last = content;
-                contact.LastDate = message.Created;
+                contact.Lastdate = message.Created;
                 message.Contact = contact;
                 message.ContactId = contactId;
                 message.UserId = userId;
@@ -134,7 +134,7 @@ namespace WhatsAppApiServer.Services
                 {
                     return false;
                 }
-                contact.LastDate = oldMessage.Created;
+                contact.Lastdate = oldMessage.Created;
                 contact.Last = content;
 
                 _context.Contacts.Update(contact);

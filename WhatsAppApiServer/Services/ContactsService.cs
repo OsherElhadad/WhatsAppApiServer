@@ -65,7 +65,7 @@ namespace WhatsAppApiServer.Services
                 contact.User = user;
                 contact.Messages = new List<Message>();
                 contact.Last = null;
-                contact.LastDate = null;
+                contact.Lastdate = null;
                 if (user.Contacts == null)
                 {
                     user.Contacts = new List<Contact>();
