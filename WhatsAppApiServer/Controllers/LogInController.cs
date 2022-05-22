@@ -12,7 +12,7 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/[controller]")]
     public class LogInController : ControllerBase
     {
-        private readonly UsersService _service;
+        private readonly IUsersService _service;
         public IConfiguration _configuration;
         public LogInController(UsersService service, IConfiguration configuration)
         {

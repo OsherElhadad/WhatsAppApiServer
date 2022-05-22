@@ -5,17 +5,17 @@ using WhatsAppApiServer.Models;
 
 namespace WhatsAppApiServer.Services
 {
-    public class ContactsService
+    public class ContactsService : IContactsService
     {
         private readonly WhatsAppApiContext _context;
-        private readonly MessagesService _service;
+        private readonly IMessagesService _service;
         public ContactsService(WhatsAppApiContext contactsContext, MessagesService service)
         {
             _context = contactsContext;
             _service = service;
         }
 
-        public async Task<List<Contact>?> GetContacts(string userId)
+        public override async Task<List<Contact>?> GetContacts(string userId)
         {
             var contacts = await _context.Contacts.ToListAsync();
 
@@ -29,7 +29,7 @@ namespace WhatsAppApiServer.Services
             return userContacts.ToList();
         }
 
-        public async Task<Contact?> GetContact(string userId, string contactId)
+        public override async Task<Contact?> GetContact(string userId, string contactId)
         {
             var usersContact = await GetContacts(userId);
             
@@ -48,7 +48,7 @@ namespace WhatsAppApiServer.Services
             return userContact.FirstOrDefault();
         }
 
-        public async Task<bool> AddContact(string userId, Contact contact)
+        public override async Task<bool> AddContact(string userId, Contact contact)
         {
             if (contact == null || contact.Id == null || ContactExists(userId, contact.Id))
             {
@@ -82,7 +82,7 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        public async Task<bool> UpdateContact(string userId, string contactId, string newName, string newServer)
+        public override async Task<bool> UpdateContact(string userId, string contactId, string newName, string newServer)
         {
             if (userId == null || contactId == null || newName == null ||
                 newServer == null || !ContactExists(userId, contactId))
@@ -108,7 +108,7 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        public async Task<bool> DeleteContact(string userId, string contactId)
+        public override async Task<bool> DeleteContact(string userId, string contactId)
         {
             if (userId == null || contactId == null || !ContactExists(userId, contactId))
             {
@@ -145,7 +145,7 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        public async Task<bool> DeleteContactsOfUser(string userId)
+        public override async Task<bool> DeleteContactsOfUser(string userId)
         {
             if (userId == null)
             {
@@ -166,7 +166,7 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        public bool ContactExists(string userId, string contactId)
+        public override bool ContactExists(string userId, string contactId)
         {
             return _context.Contacts.Any(c => c.Id == contactId && c.UserId == userId);
         }

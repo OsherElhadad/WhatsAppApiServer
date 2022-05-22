@@ -10,7 +10,7 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/[controller]")]
     public class InvitationsController : ControllerBase
     {
-        private readonly ContactsService _contactsService;
+        private readonly IContactsService _contactsService;
         private readonly HubService _hubService;
         private readonly IHubContext<MyHub> _myHub;
         public InvitationsController(ContactsService contactsService, IHubContext<MyHub> myHub, HubService hubService)

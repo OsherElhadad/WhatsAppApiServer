@@ -5,7 +5,7 @@ using WhatsAppApiServer.Models;
 
 namespace WhatsAppApiServer.Services
 {
-    public class UsersService
+    public class UsersService : IUsersService
     {
         private readonly WhatsAppApiContext _context;
         private readonly ContactsService _service;
@@ -15,12 +15,12 @@ namespace WhatsAppApiServer.Services
             _service = service;
         }
 
-        public async Task<List<User>> GetUsers()
+        public override async Task<List<User>> GetUsers()
         {
             return await _context.Users.ToListAsync();
         }
 
-        public async Task<User?> GetUser(string id)
+        public override async Task<User?> GetUser(string id)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id);
@@ -28,7 +28,7 @@ namespace WhatsAppApiServer.Services
             return user;
         }
 
-        public async Task<bool> AddUser(User user)
+        public override async Task<bool> AddUser(User user)
         {
             if (user == null || user.Id == null || UserExists(user.Id))
             {
@@ -47,7 +47,7 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        public async Task<bool> UpdateUser(string oldId, string newPass)
+        public override async Task<bool> UpdateUser(string oldId, string newPass)
         {
             if (oldId == null || newPass == null || !UserExists(oldId))
             {
@@ -72,7 +72,7 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        public async Task<bool> DeleteUser(string id)
+        public override async Task<bool> DeleteUser(string id)
         {
             if (id == null || !UserExists(id))
             {
@@ -100,12 +100,12 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        public bool UserExists(string id)
+        public override bool UserExists(string id)
         {
             return _context.Users.Any(u => u.Id == id);
         }
 
-        public bool UserNameAndPassExists(string id, string pass)
+        public override bool UserNameAndPassExists(string id, string pass)
         {
             return _context.Users.Any(u => u.Id == id && u.Password == pass);
         }

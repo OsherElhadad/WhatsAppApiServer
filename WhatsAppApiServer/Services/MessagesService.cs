@@ -4,7 +4,7 @@ using WhatsAppApiServer.Models;
 
 namespace WhatsAppApiServer.Services
 {
-    public class MessagesService
+    public class MessagesService : IMessagesService
     {
         private readonly WhatsAppApiContext _context;
         public MessagesService(WhatsAppApiContext contactsContext)
@@ -12,7 +12,7 @@ namespace WhatsAppApiServer.Services
             _context = contactsContext;
         }
 
-        public async Task<List<Message>?> GetMessages(string userId, string contactId)
+        public override async Task<List<Message>?> GetMessages(string userId, string contactId)
         {
             var messages = await _context.Messages.ToListAsync();
             if (messages == null || userId == null)
@@ -25,7 +25,7 @@ namespace WhatsAppApiServer.Services
             return userContactMessages.ToList();
         }
 
-        public async Task<Message?> GetMessage(string userId, string contactId, int messageId)
+        public override async Task<Message?> GetMessage(string userId, string contactId, int messageId)
         {
             var userContactMessages = await GetMessages(userId, contactId);
 
@@ -44,7 +44,7 @@ namespace WhatsAppApiServer.Services
             return userContactMessage.FirstOrDefault();
         }
 
-        public async Task<Message?> AddMessage(string userId, string contactId, string content)
+        public override async Task<Message?> AddMessage(string userId, string contactId, string content)
         {
             var message = new Message();
             try
@@ -79,7 +79,7 @@ namespace WhatsAppApiServer.Services
             return message;
         }
 
-        public async Task<Message?> AddMessageTransfer(string userId, string contactId, string content)
+        public override async Task<Message?> AddMessageTransfer(string userId, string contactId, string content)
         {
             var message = new Message();
             try
@@ -114,7 +114,7 @@ namespace WhatsAppApiServer.Services
             return message;
         }
 
-        public async Task<bool> UpdateMessage(string userId, string contactId, int messageId, string content)
+        public override async Task<bool> UpdateMessage(string userId, string contactId, int messageId, string content)
         {
             if (!MessageExists(userId, contactId, messageId))
             {
@@ -148,7 +148,7 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        public async Task<bool> DeleteMessage(string userId, string contactId, int messageId)
+        public override async Task<bool> DeleteMessage(string userId, string contactId, int messageId)
         {
             if (!MessageExists(userId, contactId, messageId))
             {
@@ -181,7 +181,7 @@ namespace WhatsAppApiServer.Services
             return true;
         }
 
-        public async Task<bool> DeleteMessagesOfContact(string? userId, string? contactId)
+        public override async Task<bool> DeleteMessagesOfContact(string? userId, string? contactId)
         {
             if (userId == null || contactId == null)
             {
@@ -201,7 +201,7 @@ namespace WhatsAppApiServer.Services
             }
             return true;
         }
-        public bool MessageExists(string userId, string contactId, int messageId)
+        public override bool MessageExists(string userId, string contactId, int messageId)
         {
             return _context.Messages.Any(m => m.Id == messageId && m.ContactId == contactId && m.UserId == userId);
         }

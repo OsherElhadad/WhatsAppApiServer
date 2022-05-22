@@ -14,7 +14,7 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/[controller]")]
     public class ContactsController : ControllerBase
     {
-        private readonly ContactsService _service;
+        private readonly IContactsService _service;
         private readonly HubService _hubService;
         private readonly IHubContext<MyHub> _myHub;
 

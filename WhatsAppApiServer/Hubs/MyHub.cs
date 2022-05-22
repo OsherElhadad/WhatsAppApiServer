@@ -10,7 +10,7 @@ namespace WhatsAppApiServer.Hubs
         public MyHub(HubService hubService) { 
             _hubService = hubService;
         }
-        public async Task Connect(string username)
+        public void Connect(string username)
         {
             _hubService.AddUserConnection(username, Context.ConnectionId);
         }

@@ -15,8 +15,8 @@ namespace WhatsAppApiServer.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly HubService _hubService;
-        private readonly MessagesService _messagesService;
-        private readonly ContactsService _contactsService;
+        private readonly IMessagesService _messagesService;
+        private readonly IContactsService _contactsService;
         private readonly IHubContext<MyHub> _myHub;
 
         public MessagesController(MessagesService messagesService, ContactsService contactsService, IHubContext<MyHub> myHub, HubService hubService)
@@ -79,6 +79,10 @@ namespace WhatsAppApiServer.Controllers
                 return Unauthorized();
             }
             var newMessage = await _messagesService.AddMessage(current, id, message.Content);
+            if (newMessage == null)
+            {
+                return BadRequest();
+            }
             newMessage.Sent = true;
             if (newMessage == null)
             {

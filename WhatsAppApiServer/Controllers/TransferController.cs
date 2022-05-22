@@ -11,8 +11,8 @@ namespace WhatsAppApiServer.Controllers
     public class TransferController : ControllerBase
     {
         private readonly HubService _hubService;
-        private readonly MessagesService _messagesService;
-        private readonly ContactsService _contactsService;
+        private readonly IMessagesService _messagesService;
+        private readonly IContactsService _contactsService;
         private readonly IHubContext<MyHub> _myHub;
         public TransferController(MessagesService messagesService, ContactsService contactsService, IHubContext<MyHub> myHub, HubService hubService)
         {

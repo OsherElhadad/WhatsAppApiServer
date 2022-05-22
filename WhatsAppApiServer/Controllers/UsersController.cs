@@ -14,7 +14,7 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly UsersService _service;
+        private readonly IUsersService _service;
         public IConfiguration _configuration;
         public UsersController(UsersService service, IConfiguration configuration)
         {
