@@ -10,14 +10,16 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/[controller]")]
     public class TransferController : ControllerBase
     {
+        private readonly HubService _hubService;
         private readonly MessagesService _messagesService;
         private readonly ContactsService _contactsService;
         private readonly IHubContext<MyHub> _myHub;
-        public TransferController(MessagesService messagesService, ContactsService contactsService, IHubContext<MyHub> myHub)
+        public TransferController(MessagesService messagesService, ContactsService contactsService, IHubContext<MyHub> myHub, HubService hubService)
         {
             _messagesService = messagesService;
             _myHub = myHub;
             _contactsService = contactsService;
+            _hubService = hubService;
         }
 
         // POST: Transfer
@@ -33,9 +35,15 @@ namespace WhatsAppApiServer.Controllers
             {
                 return BadRequest();
             }
-            var contact = await _contactsService.GetContact(transfer.To, transfer.From);
-            await _myHub.Clients.Groups(transfer.To).SendAsync("MessageChangeRecieved", contact, message);
 
+            var contact = await _contactsService.GetContact(transfer.To, transfer.From);
+
+            string? connectionID = _hubService.GetConnectionId(transfer.To);
+
+            if (connectionID != null)
+            {
+                await _myHub.Clients.Client(connectionID).SendAsync("MessageChangeRecieved", contact, message);
+            }
             return Created(nameof(PostTransfer), null);
         }
     }

@@ -17,6 +17,7 @@ builder.Services.AddDbContext<WhatsAppApiContext>();
 builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<ContactsService>();
 builder.Services.AddScoped<MessagesService>();
+builder.Services.AddScoped<HubService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

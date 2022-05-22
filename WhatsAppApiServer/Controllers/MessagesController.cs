@@ -14,15 +14,17 @@ namespace WhatsAppApiServer.Controllers
     [Route("api/Contacts/{id}/[controller]")]
     public class MessagesController : ControllerBase
     {
+        private readonly HubService _hubService;
         private readonly MessagesService _messagesService;
         private readonly ContactsService _contactsService;
         private readonly IHubContext<MyHub> _myHub;
 
-        public MessagesController(MessagesService messagesService, ContactsService contactsService, IHubContext<MyHub> myHub)
+        public MessagesController(MessagesService messagesService, ContactsService contactsService, IHubContext<MyHub> myHub, HubService hubService)
         {
             _messagesService = messagesService;
             _contactsService = contactsService;
             _myHub = myHub;
+            _hubService = hubService;
         }
 
         // GET: Messages
@@ -77,12 +79,20 @@ namespace WhatsAppApiServer.Controllers
                 return Unauthorized();
             }
             var newMessage = await _messagesService.AddMessage(current, id, message.Content);
+            newMessage.Sent = true;
             if (newMessage == null)
             {
                 return BadRequest();
             }
+
             var contact = await _contactsService.GetContact(current, id);
-            await _myHub.Clients.Groups(current).SendAsync("MessageChangeRecieved", contact, newMessage);
+
+            string? connectionID = _hubService.GetConnectionId(current);
+
+            if (connectionID != null)
+            {
+                await _myHub.Clients.Client(connectionID).SendAsync("MessageChangeRecieved", contact, newMessage);
+            }
             return Created(nameof(PostMessages), null);
         }
 

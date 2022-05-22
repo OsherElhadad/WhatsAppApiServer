@@ -11,11 +11,13 @@ namespace WhatsAppApiServer.Controllers
     public class InvitationsController : ControllerBase
     {
         private readonly ContactsService _contactsService;
+        private readonly HubService _hubService;
         private readonly IHubContext<MyHub> _myHub;
-        public InvitationsController(ContactsService contactsService, IHubContext<MyHub> myHub)
+        public InvitationsController(ContactsService contactsService, IHubContext<MyHub> myHub, HubService hubService)
         {
             _contactsService = contactsService;
             _myHub = myHub;
+            _hubService = hubService;
         }
 
         // POST: Invitations
@@ -34,8 +36,13 @@ namespace WhatsAppApiServer.Controllers
             {
                 return BadRequest();
             }
-            await _myHub.Clients.Groups(invitation.To).SendAsync("ContactChangeRecieved", contact);
 
+            string? connectionID = _hubService.GetConnectionId(invitation.To);
+
+            if (connectionID != null)
+            {
+                await _myHub.Clients.Client(connectionID).SendAsync("ContactChangeRecieved", contact);
+            }
             return Created(nameof(PostInvitations), null);
         }
     }
