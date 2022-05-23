@@ -1,8 +1,8 @@
 # Getting Started
 
-* Clone this repository.
-* Open the project with IDE like- visual studio.
-* To run this app on your computer please make sure MariaDB is installed. 
+Clone this repository.
+Open the project with IDE like- visual studio 2022.
+To run this app on your computer please make sure MariaDB is installed. 
 If not, please download it from here: https://mariadb.org/
 
 To work with MariaDB using an Entity Framework, we will 
@@ -28,7 +28,7 @@ Note: We are working with .NET version 6.0.1.
 
 
 Now you are ready to start!
-In oreder to run the api server, open the project with IDE (like visual studio) and press on run.
+In oreder to run the api server, open the project with IDE (like visual studio 2022) and press on run.
 <br>
 All you need to do now is to wait for the swagger to open on you browser, and then the server is running.
 
