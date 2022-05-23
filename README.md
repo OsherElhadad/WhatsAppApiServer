@@ -21,17 +21,16 @@ by entering the following command:
 
 Finally create the database:
   1) Change to your mariaDB password at WhatsAppApiContext.cs in connectionString- "...password={your password}..."
-	2) Then apply the migration using: "update-database"
+  2) Then apply the migration using: "update-database"
 
 Note: We are working with .NET version 6.0.1.
 	  Please make sure it is installed. 
 
 
 Now you are ready to start!
-In oreder to open the website, go to the cloned folder on the CLI and enter the command :
-$ npm start
+In oreder to run the api server, open the project with IDE (like visual studio) and press on run.
 <br>
-All you need to do now is to wait for the website to open on you browser.
+All you need to do now is to wait for the swagger to open on you browser, and then the server is running.
 
 ## Log-In Page
 
