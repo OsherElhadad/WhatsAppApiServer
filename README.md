@@ -1,16 +1,30 @@
 # Getting Started
 
-* Make sure you have node.js installed on your computer.
 * Clone this repository.
-* Go to cloned folder on the CLI and enter the following commands:
-- $ npm install
-- $ npm install react-bootstrap
-- $ npm install react-router-dom
-- $ npm install jquery
-- $ npm install @microsoft/signalr
-- $ Only if there is a recommendation, do: npm audit fix --force
-- Make sure to start the Web Api side. You can follow the instructions on here: https://github.com/OsherElhadad/WhatsAppApiServer
-- Make sure to start the Ratings side. You can follow the instructions on here: https://github.com/OsherElhadad/WhatsAppRating
+* Open the project with IDE like- visual studio.
+* To run this app on your computer please make sure MariaDB is installed. 
+If not, please download it from here: https://mariadb.org/
+
+To work with MariaDB using an Entity Framework, we will 
+use the Pomelo Entity Framework. 
+It is available as a NuGet package here: https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql
+You can simply open the package manager (PM) console
+(In Visual Studio 2022 -> View -> Other Windows -> Package Manager Console).
+
+And enter the following command:
+"Install-Package Pomelo.EntityFrameworkCore.MySql -Version 6.0.1"
+(*without the quotation marks*)
+
+Then, install the Microsoft Entity Framework Tools package
+by entering the following command:
+"Install-Package Microsoft.EntityFrameworkcore.Tools -version 6.0.1"
+
+Finally create the database:
+  1) Change to your mariaDB password at WhatsAppApiContext.cs in connectionString- "...password={your password}..."
+	2) Then apply the migration using: "update-database"
+
+Note: We are working with .NET version 6.0.1.
+	  Please make sure it is installed. 
 
 
 Now you are ready to start!
