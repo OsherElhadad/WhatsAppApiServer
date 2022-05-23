@@ -71,6 +71,7 @@ All you need to do now is to wait for the swagger to open on you browser, and th
 ## Services
 
 * Has IUsersService, IContactsService, IMessagesService interfaces of UsersService, ContactsService, MessagesService that has field of WhatsAppApiContext that contains the 3 DB tables (entity framework) that does the controller methods that uses the DB context.
+* Has HubService that has static dictionary of connectionId's and users.
 
 ## MariaDB
 
