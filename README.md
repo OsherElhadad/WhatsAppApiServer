@@ -32,40 +32,63 @@ In oreder to run the api server, open the project with IDE (like visual studio 2
 <br>
 All you need to do now is to wait for the swagger to open on you browser, and then the server is running.
 
-## Log-In Page
+## Users Controller
 
-* This is the home page which allows you to log-in to the system and start chatting with your friends!
-* In case you are not already signed, you can click the link below the log-in button and sign-up.
-* In case you want to check the website ratings, just click on the relevant link!
-* When successfully logged-in, you will be navigated to the chats screen.
+* Has Get http://localhost:5146/api/Users - returns json of the all users (200) or not found (404) if empty.
+* Has Get http://localhost:5146/api/Users/{Id} - returns json of this user (200) or not found (404) if this id doesn't exist.
+* Has Post http://localhost:5146/api/Users - create new user by getting json of UserId and Password in the body of the request and returns (200) the token of the JWT if created successfully or failed (400) else.
+* Has Put http://localhost:5146/api/Users/{Id} - update user by getting json of Password in the body of the request and returns (204) if updated successfully or failed (400) else.
+* Has Delete http://localhost:5146/api/Users/{Id} - delete user and returns (204) if deleted successfully or failed (400) else.
 
-## Ratings Page
+## Contacts Controller
 
-You can find more information about this page on here: https://github.com/OsherElhadad/WhatsAppRating
+* Has Get http://localhost:5146/api/Contacts - returns json of the all contacts (200) of the loged in user or not found (404) if empty.
+* Has Get http://localhost:5146/api/Contacts/{Id} - returns json of this contact (200) of the loged in user or not found (404) if this id doesn't exist.
+* Has Post http://localhost:5146/api/Contacts - create new contact to the loged in user by getting json of Id, Name and Server in the body of the request and returns (201) if created successfully or failed (400) else.
+* Has Put http://localhost:5146/api/Contacts/{Id} - update contact of the loged in user by getting json of Name and Server in the body of the request and returns (204) if updated successfully or failed (400) else.
+* Has Delete http://localhost:5146/api/Contacts/{Id} - delete contact of the loged in user and returns (204) if deleted successfully or failed (400) else.
 
-## Sign-Up Page
+## Messages Controller
 
-* This page allows you to create your account.
-* The username, password and verfiy password fields are requierd in order to sign up. In case one of the mentioned is empty or invalid(will be explanied in a bit), the system won't allow you to sign-up and the submit button will be disabled.
-* When all required fields are filled and valid, the submit button will be un-disabled and you will be able to submit your request to sign-up.
-* While typing in the input fields you will notice a dynamic message below the relavent field. In case the current input is valid, a green border will apear with a check sign and a "Looking good" message. On the other hand, if the current input is invalid, a red border will aprear with a X sign and a message to indicate the specific problem with the input.
+* Has Get http://localhost:5146/api/Contacts/{Id}/Messages - returns json of the all messages (200) of the loged in user and the specific contact or not found (404) if empty.
+* Has Get http://localhost:5146/api/Contacts/{Id}/Messages/{Id2} - returns json of this message (200) of the loged in user and the specific contact or not found (404) if this id doesn't exist.
+* Has Post http://localhost:5146/api/Contacts/{Id}/Messages - create new message to the loged in user and the specific contact by getting json of Content in the body of the request and returns (201) if created successfully or failed (400) else.
+* Has Put http://localhost:5146/api/Contacts/{Id}/Messages/{Id2} - update message of the loged in user and the specific contact by getting json of Content in the body of the request and returns (204) if updated successfully or failed (400) else.
+* Has Delete http://localhost:5146/api/Contacts/{Id}/Messages/{Id2} - delete message of the loged in user and the specific contact and returns (204) if deleted successfully or failed (400) else.
 
-Fields requirement in-depth:
-- Username must be one word with length greater or equals to 2, without '-' or '_' characters.
-- Password must be one word with length greater or equals to 2 and contatin at least one number and one letter characters.
-- Verified Password must match the password.
+## Invitations Controller
 
-## Chats Page
+* Has Post http://localhost:5146/api/Invitations - create new contact by getting json of From (the contact we add), To (the user we add the contact to) and Server (the server of the contact) in the body of the request and returns (201) if created successfully or failed (400) else.
 
-* Once you logged-in, your contacts list will appear on the left side.
-* Above the contacts list, you can see 3 buttons near your default profile picture. From left to right -
-* Add new contact - Upon clicking on it, a form modal will show up. You can enter the new contact's username, nickname and server. 
-  When The "Add" button is clicked, the form will be submited.
-  In case the contact's server succesfully add the new chat, the chat will be created to the user. Otherwise, an error modal will be shown.
-* The search button - Once you click it, you can enter text in order to dynamically filter by it. Only contacts on your contacts list that the current input is a substring to thier nickname will appear on your contacts list(not a case sensitive filter).
-* Sign-Off - Once clicked on, a modal will appear to ask if you are sure you want to sign-out. You can choose your action by the relavent button.
+## Transfer Controller
 
-As for the chat itself - In order to open a chat just click on the desired contact!
-* Upon sending a new message or hoevring on the chat window, it will auto scroll to display the lastest messages in the current chat. 
-* You can send text messages by clicking on the envelope button or pressing the "Enter" key. You can't send an empty message.
-* The microphone, video and picture buttons are disabled as it is not required in this assignment.
+* Has Post http://localhost:5146/api/Transfer - create new message by getting json of From (the contact send the message), To (the user who got the message) and Content (the content of the message) in the body of the request and returns (201) if created successfully or failed (400) else.
+
+## LogIn Controller
+
+* Has Post http://localhost:5146/api/LogIn - log in (user) by getting json of UserId and Password in the body of the request and returns (200) the token of the JWT if created successfully or failed (400) else.
+
+## Services
+
+* Has IUsersService, IContactsService, IMessagesService interfaces of UsersService, ContactsService, MessagesService that has field of WhatsAppApiContext that contains the 3 DB tables (entity framework) that does the controller methods that uses the DB context.
+
+## MariaDB
+
+* There is a database named: WhatsAppApiDB.
+* There is a table named Users with these fields:
+  1) Id (key)- a string with 2-100 characters.
+  2) Password- a string with more then 1 characters.
+* There is a table named Contacts with these fields:
+  1) Id (key)- a string with 2-100 characters.
+  2) UserId (key, and foreign key of Users)- a string with 2-100 characters.
+  3) Last- a string with 0 or more characters (last message).
+  4) LastDate- a date (nullable) (last date of the last message).
+  5) Name- a string with 2-100 characters (the contact's nickname).
+  6) Server- a string with 1 or more characters.
+* There is a table named Messages with these fields:
+  1) Id (key)- a number (auto increase).
+  2) UserId (foreign key of Contacts and Users)- a string with 2-100 characters.
+  3) ContactId (foreign key of Contacts)- a string with 2-100 characters.
+  4) Content- a string with 1-2000 characters.
+  5) Created- a date (when created).
+  6) Sent- a bool (0 or 1) if sent by the user then it is true and false if sent by the contact.
