@@ -15,7 +15,7 @@ You can simply open the package manager (PM) console <br>
   1) Navigate on the cloned directory to: WhatsAppApiServer\Data\WhatsAppApiContext.cs and change your mariaDB password in connectionString- "...password={your              password}..."
   2) Apply the migration by entering on the Package Manager Console: $ update-database
 
-Note: We are working with .NET version 6.0.1. Please make sure it is installed. 
+* Note: We are working with .NET version 6.0.1. Please make sure it is installed. 
 
 You are ready to start!
 In oreder to run the api server, open the project with IDE (like visual studio 2022) and press on run.
