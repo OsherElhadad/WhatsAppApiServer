@@ -2,8 +2,7 @@
 
 * Make sure MariaDB is installed. If not, please download it from here: https://mariadb.org/
 * Clone this repository.
-* Open the project with IDE like- Visual Studio 2022.
-* Make sure WhatsAppApiServer.sln is set as the project solution.
+* Open the project with IDE like- Visual Studio 2022 and make sure WhatsAppApiServer.sln is set as the project solution.
 * To work with MariaDB using an Entity Framework, we will use the Pomelo Entity Framework. It is available as a NuGet package here: https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql
 You can simply open the package manager (PM) console <br>
 (In Visual Studio 2022 -> View -> Other Windows -> Package Manager Console).
